@@ -8,12 +8,12 @@ jobs:
         steps:
             - name: Checkout branch
               uses: actions/checkout@v2
+            - name: Install Dependencies
+              run: npm install
             - name: Run style check
               run: npm run lint
-            - name: Install dependencies and build
-              run: |
-                npm install
-                npm run build
+            - name: Build files
+              run: npm run build
             - name: Deploy to Firebase
               uses: FirebaseExtended/action-hosting-deploy@v0
               with:
