@@ -1,0 +1,27 @@
+name: Deploy to Prod
+
+on:
+    push:
+        branches:
+            - release
+jobs:
+    build_and_preview:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout branch
+              uses: actions/checkout@v2
+            - name: Run style check
+              run: npm run lint
+            - name: Install dependencies and build
+              run: |
+                npm install
+                npm run build
+            - name: Deploy to Firebase
+              uses: FirebaseExtended/action-hosting-deploy@v0
+              with:
+                  repoToken: '${{ secrets.GITHUB_TOKEN }}'
+                  firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+                  channelId: live
+                  target: prod
+              env:
+                  FIREBASE_CLI_PREVIEWS: hostingchannels
