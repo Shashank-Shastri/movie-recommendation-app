@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "prod",
-      "public": "public",
+      "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -11,7 +11,7 @@
     },
     {
       "target": "dev",
-      "public": "public",
+      "public": "dist",
       "ignore": [
         "firebase.json",
         "**/.*",
