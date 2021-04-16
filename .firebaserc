@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "movie-recommendation-77e17"
+  },
+  "targets": {
+    "movie-recommendation-77e17": {
+      "hosting": {
+        "dev": [
+          "movie-recommendation-77e17"
+        ],
+        "prod": [
+          "movie-recommendation"
+        ]
+      }
+    }
+  }
+}
