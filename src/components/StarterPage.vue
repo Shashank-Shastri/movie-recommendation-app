@@ -2,7 +2,7 @@
     <div class="starter-page">
         <div class="section text-center">
             <h3>Search a movie you like</h3>
-            <v-select @search="onSearch" :filterable="false" :options="movies" v-model="selectedMovie" @input="movieSelected" label="l">
+            <v-select @search="onSearch" :filterable="false" :options="movies" v-model="selectedMovie" label="l">
                 <template v-slot:no-options>
                     type to search IMDb movies..
                 </template>
@@ -38,10 +38,11 @@
                 :key="movie.imdb_title_id"
                 :image-url="movie.imageUrl"
                 :movie-cast="movie.cast"
-                :movie-id="movie.imdb_title_id"
+                :movie-link="`https://www.imdb.com/title/${movie.imdb_title_id}`"
                 :movie-title="movie.title"
                 :movie-year="movie.year"
             />
+            <span v-if="!recommendedMovies.length && selectedMovie">We have no recommendations for this movie.</span>
         </div>
     </div>
 </template>
@@ -49,6 +50,7 @@
 import axios from 'axios';
 import { debounce, get } from 'lodash';
 import MovieInfo from './MovieInfo.vue';
+import fetchJsonp from 'fetch-jsonp';
 
 const _ = { debounce, get };
 
@@ -64,6 +66,11 @@ export default {
             recommendedMovies: []
         };
     },
+    watch: {
+        selectedMovie() {
+            this.movieSelected();
+        }
+    },
     methods: {
         onSearch(search, loading) {
             if(search.length) {
@@ -73,34 +80,45 @@ export default {
             }
         },
         search: _.debounce(async (loading, search, vm) => {
-            const { data: movies } = await axios.get(`https://v2.sg.media-imdb.com/suggestion/titles/${search[0]}/${search}.json`);
-            vm.movies = movies.d.map(movie => {
-                return {
-                    cast: _.get(movie, 's', ''),
-                    imageUrl: _.get(movie, 'i.imageUrl', ''),
-                    title: movie.l,
-                    year: _.get(movie, 'y', ''),
-                    id: movie.id
-                };
+            fetchJsonp(`https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`, { jsonpCallbackFunction: `imdb$${search}` })
+            .then(response => response.json())
+            .then(data => {
+                vm.movies = data.d.map(movie => {
+                    return {
+                        cast: _.get(movie, 's', ''),
+                        imageUrl: _.get(movie, 'i[0]', ''),
+                        title: movie.l,
+                        year: _.get(movie, 'y', ''),
+                        id: movie.id
+                    };
+                });
             });
             loading(false);
         }, 1000),
         async movieSelected() {
             try {
                 const imdb_id = this.selectedMovie.id;
-                let { data: movies } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
-                movies = await Promise.all(movies.result.map(async (movie) => {
-                    const title = movie.title.toLowerCase();
-                    let { data: imdbData } = await axios.get(`https://v2.sg.media-imdb.com/suggestion/titles/${title[0]}/${title}.json`);
-                    imdbData = {
-                        cast: _.get(imdbData, 'd[0].s', ''),
-                        imageUrl: _.get(imdbData, 'd[0].i.imageUrl', ''),
-                        year: _.get(imdbData, 'd[0].y', '')
+                if(imdb_id) {
+                    this.recommendedMovies = [];
+                    let { data: movies, status } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
+                    if(status === 200) {
+                        movies = await Promise.all(movies.result.map(async (movie) => {
+                            const title = movie.title.toLowerCase();
+                            const callbackName = title.replaceAll(' ', '_');
+                            return fetchJsonp(`https://sg.media-imdb.com/suggests/${title[0]}/${title}.json`, { jsonpCallbackFunction: `imdb$${callbackName}` })
+                            .then(response => response.json())
+                            .then(imdbData => {
+                                imdbData = {
+                                    cast: _.get(imdbData, 'd[0].s', ''),
+                                    imageUrl: _.get(imdbData, 'd[0].i[0]', ''),
+                                    year: _.get(imdbData, 'd[0].y', '')
+                                }
+                                return { ...movie, ...imdbData };
+                            });
+                        }));
+                        this.recommendedMovies = movies;
                     }
-                    return { ...movie, ...imdbData };
-                }));
-                console.log(movies);
-                this.recommendedMovies = movies;
+                }
             } catch(e) {
                 console.error(e);
             }
