@@ -1,4 +1,5 @@
 <template>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <div id="error">
         <div class="moon"></div>
         <div :class="i" v-for="i in moonNStars" :key="i"></div>
@@ -97,7 +98,14 @@ export default {
         
             ctx.beginPath();
             ctx.moveTo(130, 170);
+
+            var x = window.matchMedia("(max-width: 400px)")
+            if(x.matches) { 
+            ctx.bezierCurveTo(250, y1, 300, y2, 310, y3);
+            }
+            else{
             ctx.bezierCurveTo(250, y1, 345, y2, 400, y3);
+            }
             
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 8;
