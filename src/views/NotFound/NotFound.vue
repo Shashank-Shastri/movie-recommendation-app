@@ -2,7 +2,8 @@
     <div id="error">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <div class="moon"></div>
-        <div :class="i" v-for="i in moonNStars" :key="i"></div>
+        <div :class="i" v-for="i in moonCraters" :key="i"></div>
+        <div class="star" :style="i" v-for="i in randomStars" :key="i"></div>
 
         <div class="error">
         <div class="error__title">404</div>
@@ -28,15 +29,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
-
-
-for (var i = 0; i < 100; i++) {
-  var star = '<div class="star" style="animation: twinkle '+((Math.random()*5) + 5)+'s linear '+((Math.random()*5) + 5)+'s infinite; top: '+Math.random()*$(window).height()+'px; left: '+Math.random()*$(window).width()+'px;"></div>';
-  $('body').append(star);
-}
-
-
 let y1 = 160;
 let y2 = 100;
 let y3 = 100;
@@ -51,7 +43,6 @@ let ctx = cordCanvas?.getContext('2d');
 export default {
     data() {
         return {
-            moonNStars: [],
             astronaut: [
                 'astronaut__backpack',
                 'astronaut__body',
@@ -68,12 +59,16 @@ export default {
                 'astronaut__foot-right',
                 'astronaut__wrist-left',
                 'astronaut__wrist-right'
-            ]
+            ],
+            moonCraters: [],
+            randomStars: []
         }
     },
     beforeMount() {
-        for(let i = 1; i <= 3; i++) this.moonNStars.push(`moon__crater moon__crater${i}`);
-        for(let i = 1; i <= 5; i++) this.moonNStars.push(`star star${i}`);
+        for(let i = 1; i <= 3; i++) this.moonCraters.push(`moon__crater moon__crater${i}`);
+        for(let i = 1; i <= 100; i++) {
+            this.randomStars.push(`animation: twinkle ${Math.random() * 5 + 5}s linear ${Math.random() * 5 + 5}s infinite; top: ${Math.random() * screen.height}px; left: ${Math.random() * screen.width}px;`);
+        }
     },
     mounted() {
         const visorCanvas = document.getElementById('visor');
@@ -103,6 +98,7 @@ export default {
         },
         animate() {
             requestAnimationFrame(this.animate);
+
             ctx.clearRect(0, 0, innerWidth, innerHeight);
         
             ctx.beginPath();

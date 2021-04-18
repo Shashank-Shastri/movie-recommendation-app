@@ -11,11 +11,7 @@ export default {
 
 <style>
 body {
-    background: linear-gradient(
-        90deg,
-        rgba(47, 54, 64, 1) 23%,
-        rgba(24, 27, 32, 1) 100%
-    );
+    background: black;
 }
 
 #app {
