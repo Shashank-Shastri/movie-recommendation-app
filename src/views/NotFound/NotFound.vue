@@ -1,7 +1,9 @@
 <template>
     <div id="error">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <div class="moon"></div>
-        <div :class="i" v-for="i in moonNStars" :key="i"></div>
+        <div :class="i" v-for="i in moonCraters" :key="i"></div>
+        <div class="star" :style="i" v-for="i in randomStars" :key="i"></div>
 
         <div class="error">
         <div class="error__title">404</div>
@@ -41,7 +43,6 @@ let ctx = cordCanvas?.getContext('2d');
 export default {
     data() {
         return {
-            moonNStars: [],
             astronaut: [
                 'astronaut__backpack',
                 'astronaut__body',
@@ -58,12 +59,16 @@ export default {
                 'astronaut__foot-right',
                 'astronaut__wrist-left',
                 'astronaut__wrist-right'
-            ]
+            ],
+            moonCraters: [],
+            randomStars: []
         }
     },
     beforeMount() {
-        for(let i = 1; i <= 3; i++) this.moonNStars.push(`moon__crater moon__crater${i}`);
-        for(let i = 1; i <= 5; i++) this.moonNStars.push(`star star${i}`);
+        for(let i = 1; i <= 3; i++) this.moonCraters.push(`moon__crater moon__crater${i}`);
+        for(let i = 1; i <= 100; i++) {
+            this.randomStars.push(`animation: twinkle ${Math.random() * 5 + 5}s linear ${Math.random() * 5 + 5}s infinite; top: ${Math.random() * screen.height}px; left: ${Math.random() * screen.width}px;`);
+        }
     },
     mounted() {
         const visorCanvas = document.getElementById('visor');
@@ -93,11 +98,17 @@ export default {
         },
         animate() {
             requestAnimationFrame(this.animate);
+
             ctx.clearRect(0, 0, innerWidth, innerHeight);
         
             ctx.beginPath();
             ctx.moveTo(130, 170);
-            ctx.bezierCurveTo(250, y1, 345, y2, 400, y3);
+
+            if(window.matchMedia('(max-width: 400px)').matches) { 
+                ctx.bezierCurveTo(250, y1, 300, y2, 310, y3);
+            } else{
+                ctx.bezierCurveTo(250, y1, 345, y2, 400, y3);
+            }
             
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 8;
@@ -134,6 +145,7 @@ export default {
         }
     }
 };
+
 </script>
 
 <style>
