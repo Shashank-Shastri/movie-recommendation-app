@@ -3,7 +3,6 @@
 </template>
 
 <script>
-
 export default {
     name: 'App'
 };
@@ -11,7 +10,11 @@ export default {
 
 <style>
 body {
-    background: black;
+    background: linear-gradient(
+        90deg,
+        rgba(47, 54, 64, 1) 23%,
+        rgba(24, 27, 32, 1) 100%
+    );
 }
 
 #app {

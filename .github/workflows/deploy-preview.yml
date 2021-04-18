@@ -9,12 +9,22 @@ jobs:
         steps:
             - name: Checkout branch
               uses: actions/checkout@v2
+
+            - name: Retrieve npm cache (if any)
+              uses: actions/cache@v1
+              with:
+                  path: ~/.npm
+                  key: npm-packages
+
             - name: Install Dependencies
               run: npm install
+
             - name: Run style check
               run: npm run lint
+
             - name: Build files
               run: npm run build
+
             - name: Deploy to Firebase
               uses: FirebaseExtended/action-hosting-deploy@v0
               with:

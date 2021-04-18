@@ -1,6 +1,5 @@
 <template>
     <div id="error">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <div class="moon"></div>
         <div :class="i" v-for="i in moonCraters" :key="i"></div>
         <div class="star" :style="i" v-for="i in randomStars" :key="i"></div>
