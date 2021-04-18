@@ -2,7 +2,7 @@
     <div class="card text-white bg-dark mb-3">
         <div class="row no-gutters">
             <div class="col-md-4">
-                <a :href="movieLink"><img style="max-width: 18rem;" class="card-img" :src="imageUrl" :alt="movieTitle"></a>
+                <a :href="movieLink" target="_blank"><img style="max-width: 18rem;" class="card-img" :src="imageUrl" :alt="movieTitle"></a>
             </div>
             <div class="col-md-8">
                 <div class="card-body">
@@ -35,7 +35,7 @@ export default {
             default: ''
         },
         movieYear: {
-            type: Number
+            type: [Number, String]
         }
     }
 };
