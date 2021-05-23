@@ -1,3 +1,32 @@
+.star {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: rgba(255,255,255,0.0);
+    border-radius: 100%;
+}
+  
+@keyframes twinkle {
+    0% {
+        transform: scale(1, 1);
+        background: rgba(255,255,255,0.0);
+        animation-timing-function: ease-in;
+    }
+    60% {
+        transform: scale(0.8, 0.8);
+        background: rgba(255,255,255,1);
+        animation-timing-function: ease-out;
+    }
+    80% {
+        background: rgba(255,255,255,0.00);
+        transform: scale(1, 1);
+    }
+    100% {
+        background: rgba(255,255,255,0.0);
+        transform: scale(1, 1);
+    }
+}
+
 .moon {
     background: linear-gradient(
         90deg,
@@ -47,59 +76,6 @@
     width: 65px;
     height: 120px;
     transform: rotate(250deg);
-}
-
-.star {
-    background: grey;
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    content: '';
-    border-radius: 100%;
-    transform: rotate(250deg);
-    opacity: 0.4;
-    animation-name: shimmer;
-    animation-duration: 1.5s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-
-@keyframes shimmer {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 0.7;
-    }
-}
-
-.star1 {
-    top: 40%;
-    left: 50%;
-    animation-delay: 1s;
-}
-
-.star2 {
-    top: 60%;
-    left: 90%;
-    animation-delay: 3s;
-}
-
-.star3 {
-    top: 10%;
-    left: 70%;
-    animation-delay: 2s;
-}
-
-.star4 {
-    top: 90%;
-    left: 40%;
-}
-
-.star5 {
-    top: 20%;
-    left: 30%;
-    animation-delay: 0.5s;
 }
 
 .error {
@@ -154,13 +130,193 @@
     color: white;
 }
 
+@keyframes spin {
+    0% {
+        transform: rotateZ(0);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
+
+
 .astronaut {
     position: absolute;
-    width: 185px;
-    height: 300px;
-    left: 70%;
+    left: 45%;
+    animation: spin 60s linear infinite;
+}
+
+
+
+@media only screen and (max-width: 800px) {
+
+.astronaut {
+    position: absolute;
+    overflow: hidden;
+    left: 10%;
     top: 50%;
-    transform: translate(-50%, -50%) rotate(20deg) scale(1.2);
+    animation: spin 60s linear infinite;
+}
+
+.moon {
+    background: linear-gradient(
+        90deg,
+        rgba(208, 208, 208, 1) 48%,
+        rgba(145, 145, 145, 1) 100%
+    );
+    position: absolute;
+    top: -100px;
+    left: -300px;
+    width: 700px;
+    height: 700px;
+    content: '';
+    border-radius: 100%;
+    box-shadow: 0px 0px 30px -4px rgba(0, 0, 0, 0.5);
+}
+
+.moon__crater {
+    position: absolute;
+    content: '';
+    border-radius: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(122, 122, 122, 1) 38%,
+        rgba(195, 195, 195, 1) 100%
+    );
+    opacity: 0.6;
+}
+
+.moon__crater1 {
+    top: 200px;
+    left: 300px;
+    width: 60px;
+    height: 180px;
+}
+
+.moon__crater2 {
+    top: 450px;
+    left: 200px;
+    width: 40px;
+    height: 80px;
+    transform: rotate(55deg);
+}
+
+.moon__crater3 {
+    top: -20px;
+    left: 40px;
+    width: 65px;
+    height: 120px;
+    transform: rotate(250deg);
+}
+.error__title {
+    margin-top: -350px;
+    margin-left: -20px;
+    font-size: 7em;
+}
+
+.error__subtitle {
+    font-size: 2em;
+    margin-left: -20px;
+}
+
+.error__description {
+    opacity: 0.5;
+    margin-left: -20px;
+}
+
+#cord{
+    position: relative;
+    top: 75px;
+    left: 45px;
+    width: 300px;
+    height: auto;
+}
+
+}
+
+
+@media only screen and (max-width: 400px) {
+    
+    .astronaut {
+        position: absolute;
+        overflow: hidden;
+        left: 10%;
+        top: 50%;
+        animation: spin 60s linear infinite;
+    }
+    
+    .moon {
+        background: linear-gradient(
+            90deg,
+            rgba(208, 208, 208, 1) 48%,
+            rgba(145, 145, 145, 1) 100%
+        );
+        position: absolute;
+        top: -100px;
+        left: -300px;
+        width: 620px;
+        height: 600px;
+        content: '';
+        border-radius: 100%;
+        box-shadow: 0px 0px 30px -4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .moon__crater {
+        position: absolute;
+        content: '';
+        border-radius: 100%;
+        background: linear-gradient(
+            90deg,
+            rgba(122, 122, 122, 1) 38%,
+            rgba(195, 195, 195, 1) 100%
+        );
+        opacity: 0.6;
+    }
+    
+    .moon__crater1 {
+        top: 100px;
+        left: 200px;
+        width: 60px;
+        height: 180px;
+    }
+    
+    .moon__crater2 {
+        top: 350px;
+        left: 100px;
+        width: 40px;
+        height: 80px;
+        transform: rotate(55deg);
+    }
+    
+    .moon__crater3 {
+        top: -20px;
+        left: 40px;
+        width: 65px;
+        height: 120px;
+        transform: rotate(250deg);
+    }
+    .error__title {
+        margin-top: -350px;
+        margin-left: -20px;
+        font-size: 7em;
+    }
+    
+    .error__subtitle {
+        font-size: 2em;
+        margin-left: -20px;
+    }
+    
+    .error__description {
+        opacity: 0.5;
+        margin-left: -80px;
+    }
+    #cord{
+        position: relative;
+        top: 75px;
+        left: 45px;
+        width: 300px;
+        height: auto;
+    }
 }
 
 .astronaut__head {
