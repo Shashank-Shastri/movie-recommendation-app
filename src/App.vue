@@ -9,6 +9,7 @@ export default {
 </script>
 
 <style>
+@import './assets/styles.scss';
 body {
     background: linear-gradient(
         90deg,
