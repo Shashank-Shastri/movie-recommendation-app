@@ -5,7 +5,7 @@
                 <a :href="movieLink" target="_blank"><img style="max-width: 18rem;" class="card-img" :src="imageUrl" :alt="movieTitle"></a>
             </div>
             <div class="col-md-8">
-                <div class="card-body">
+                <div class="card-body white-text">
                     <h5 class="card-title">{{ movieTitle }}</h5>
                     <p class="card-text">{{ movieCast }}</p>
                     <p class="card-text"><small class="text-muted">{{ movieYear }}</small></p>
