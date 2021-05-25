@@ -1,0 +1,24 @@
+.starter-page {
+    min-height: calc(100vh - 95px);
+}
+
+img {
+    height: auto;
+    max-width: 2.5rem;
+    margin-right: 1rem;
+}
+
+.d-center {
+    display: flex;
+    align-items: center;
+}
+
+.selected img {
+    width: auto;
+    max-height: 50px;
+    margin-right: 0.5rem;
+}
+
+.white-text {
+    color: white;
+}
