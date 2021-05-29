@@ -97,8 +97,8 @@ export default {
                         id: movie.id
                     };
                 });
+                loading(false);
             });
-            loading(false);
         }, 1000),
         async movieSelected() {
             try {
