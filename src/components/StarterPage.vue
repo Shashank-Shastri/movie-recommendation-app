@@ -102,7 +102,7 @@ export default {
         }, 1000),
         async movieSelected() {
             try {
-                const imdb_id = this.selectedMovie.id;
+                const imdb_id = this.selectedMovie?.id;
                 if(imdb_id) {
                     this.recommendedMovies = [];
                     let { data: movies, status } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
@@ -119,6 +119,9 @@ export default {
                                     year: _.get(imdbData, 'd[0].y', '')
                                 }
                                 return { ...movie, ...imdbData };
+                            }).catch(e => {
+                                console.error(e);
+                                return movie;
                             });
                         }));
                         this.recommendedMovies = movies;
