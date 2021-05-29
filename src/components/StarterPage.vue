@@ -39,7 +39,19 @@
                 :movie-title="movie.title"
                 :movie-year="movie.year"
             />
-            <span v-if="!recommendedMovies.length && selectedMovie">We have no recommendations for this movie.</span>
+            <loading 
+                v-model:active="loadingSearch"
+                :is-full-page="false"
+                background-color="#18191E"
+                color="#D5D5D8"
+                loader="dots"
+                :opacity="0.9"
+            />
+            <span 
+                v-if="!loadingSearch && !recommendedMovies.length && selectedMovie"
+            >
+                We have no recommendations for this movie.
+            </span>
         </div>
     </div>
 </template>
@@ -50,13 +62,16 @@ import { debounce, get, shuffle } from 'lodash';
 import MovieInfo from './MovieInfo.vue';
 import fetchJsonp from 'fetch-jsonp';
 import SlideShow from './SlideShow.vue';
-import { movieSlides } from '../constants'
+import { movieSlides } from '../constants';
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 const _ = { debounce, get, shuffle };
 
 export default {
     name: 'starter',
     components: {
+        Loading,
         MovieInfo,
         SlideShow
     },
@@ -65,7 +80,8 @@ export default {
             movies: [],
             recommendedMovies: [],
             selectedMovie: '',
-            slides: movieSlides
+            slides: movieSlides,
+            loadingSearch: false
         };
     },
     beforeMount() {
@@ -104,6 +120,7 @@ export default {
             try {
                 const imdb_id = this.selectedMovie?.id;
                 if(imdb_id) {
+                    this.loadingSearch = true;
                     this.recommendedMovies = [];
                     let { data: movies, status } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
                     if(status === 200) {
@@ -124,6 +141,7 @@ export default {
                                 return movie;
                             });
                         }));
+                        this.loadingSearch = false;
                         this.recommendedMovies = movies;
                     }
                 }
