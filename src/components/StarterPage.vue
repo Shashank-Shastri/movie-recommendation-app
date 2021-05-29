@@ -146,6 +146,7 @@ export default {
                     }
                 }
             } catch(e) {
+                this.loadingSearch = false;
                 console.error(e);
             }
         }
