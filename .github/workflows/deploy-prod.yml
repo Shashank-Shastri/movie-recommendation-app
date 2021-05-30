@@ -21,9 +21,6 @@ jobs:
             - name: Install Dependencies
               run: npm install
 
-            - name: Run style check
-              run: npm run lint
-
             - name: Build files
               run: npm run build
 
