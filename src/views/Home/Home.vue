@@ -6,13 +6,13 @@
 </template>
 
 <script>
-import Header from '@/components/Header'
-import StarterPage from '@/components/StarterPage'
+import Header from '@/components/Header';
+import StarterPage from '@/components/StarterPage';
 
 export default {
     components: {
         Header,
-        StarterPage
-    }
+        StarterPage,
+    },
 };
 </script>

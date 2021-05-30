@@ -1,7 +1,7 @@
 <template>
     <div class="starter-page">
         <div class="section text-center">
-            <SlideShow :items="slides"/>
+            <SlideShow :items="slides" />
             <v-select
                 @search="onSearch"
                 :filterable="false"
@@ -10,10 +10,10 @@
                 label="l"
                 placeholder="Type a movie you like"
             >
-                <template v-slot:no-options>
+                <template #no-options>
                     type to search IMDb movies..
                 </template>
-                <template v-slot:option="movie">
+                <template #option="movie">
                     <movie-info
                         :image-url="movie.imageUrl"
                         :movie-cast="movie.cast"
@@ -21,10 +21,11 @@
                         :movie-year="movie.year"
                     />
                 </template>
-                <template v-slot:selected-option="movie">
+                <template #selected-option="movie">
                     <div class="selected d-center white-text">
-                        <img :src='movie.imageUrl'/> 
-                        {{ movie.title }} {{ movie.year ? `(${movie.year})` : '' }}
+                        <img :src="movie.imageUrl" />
+                        {{ movie.title }}
+                        {{ movie.year ? `(${movie.year})` : '' }}
                     </div>
                 </template>
             </v-select>
@@ -39,16 +40,21 @@
                 :movie-title="movie.title"
                 :movie-year="movie.year"
             />
-            <loading 
-                v-model:active="loadingRecommendation"
+            <loading
+                v-if="loadingRecommendation"
+                :active="true"
                 :is-full-page="false"
                 background-color="#18191E"
                 color="#D5D5D8"
                 loader="dots"
                 :opacity="0.9"
             />
-            <span 
-                v-if="!loadingRecommendation && !recommendedMovies.length && selectedMovie"
+            <span
+                v-if="
+                    !loadingRecommendation &&
+                        !recommendedMovies.length &&
+                        selectedMovie
+                "
             >
                 We have no recommendations for this movie.
             </span>
@@ -69,11 +75,11 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 const _ = { debounce, get, shuffle };
 
 export default {
-    name: 'starter',
+    name: 'Starter',
     components: {
         Loading,
         MovieInfo,
-        SlideShow
+        SlideShow,
     },
     data() {
         return {
@@ -91,11 +97,11 @@ export default {
         selectedMovie() {
             this.movieSelected();
             this.recommendedMovies = [];
-        }
+        },
     },
     methods: {
         onSearch: _.debounce(async function(search, loading) {
-            if(search.length) {
+            if (search.length) {
                 loading(true);
                 this.movies = await this.searchMovies(search);
                 loading(false);
@@ -109,7 +115,10 @@ export default {
             let results = [];
             try {
                 const search = movieTitle.replaceAll(' ', '_').toLowerCase();
-                const response = await fetchJsonp(`https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`, { jsonpCallbackFunction: `imdb$${search}` });
+                const response = await fetchJsonp(
+                    `https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`,
+                    { jsonpCallbackFunction: `imdb$${search}` }
+                );
                 const data = await response.json();
                 results = data.d.map(movie => ({
                     cast: _.get(movie, 's', ''),
@@ -117,9 +126,9 @@ export default {
                     link: `https://www.imdb.com/title/${movie.id}`,
                     title: movie.l,
                     year: _.get(movie, 'y', ''),
-                    id: movie.id
+                    id: movie.id,
                 }));
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             }
             return results;
@@ -127,27 +136,35 @@ export default {
         async movieSelected() {
             try {
                 const imdb_id = this.selectedMovie?.id;
-                if(imdb_id) {
+                if (imdb_id) {
                     this.loadingRecommendation = true;
                     this.recommendedMovies = [];
-                    let { data: { result: movies } } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
-                    movies = await Promise.all(movies.map(async movie => {
-                        const [imdbData] = await this.searchMovies(movie.title);
-                        return { 
-                            ...imdbData,
-                            ...movie,
-                            link: `https://www.imdb.com/title/${movie.imdb_title_id}`,
-                        };
-                    }));
+                    let {
+                        data: { result: movies },
+                    } = await axios.get(
+                        `${process.env.VUE_APP_BACKEND_URL}/recommend_movies?imdb_id=${imdb_id}`
+                    );
+                    movies = await Promise.all(
+                        movies.map(async movie => {
+                            const [imdbData] = await this.searchMovies(
+                                movie.title
+                            );
+                            return {
+                                ...imdbData,
+                                ...movie,
+                                link: `https://www.imdb.com/title/${movie.imdb_title_id}`,
+                            };
+                        })
+                    );
                     this.loadingRecommendation = false;
                     this.recommendedMovies = movies;
                 }
-            } catch(e) {
+            } catch (e) {
                 this.loadingRecommendation = false;
                 console.error(e);
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

@@ -25,23 +25,64 @@
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint": "^6.8.0",
+    "eslint-plugin-html": "^6.1.2",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-vue": "^7.0.0",
+    "lint-staged": "^11.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "src/**/*.{js,vue}": [
+      "vue-cli-service lint"
+    ]
   },
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "es6": true,
+      "browser": true
     },
     "extends": [
       "plugin:vue/vue3-essential",
-      "eslint:recommended"
+      "plugin:vue/recommended",
+      "eslint:recommended",
+      "@vue/eslint-config-prettier"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "sourceType": "module"
     },
-    "rules": {}
+    "rules": {
+      "arrow-parens": 0,
+      "generator-star-spacing": 0,
+      "no-unused-vars": 0,
+      "semi": 0,
+      "indent": 0,
+      "no-unreachable": 0,
+      "no-inner-declarations": 0,
+      "no-undef": 0,
+      "no-useless-escape": 0,
+      "no-eval": 0,
+      "no-use-before-define": 0,
+      "no-async-promise-executor": 0,
+      "handle-callback-err": 0,
+      "vue/max-attributes-per-line": 0,
+      "vue/multiline-html-element-content-newline": 0,
+      "vue/html-self-closing": 0,
+      "vue/singleline-html-element-content-newline": 0,
+      "vue/attributes-order": 0,
+      "vue/order-in-components": 0,
+      "vue/html-indent": 0,
+      "vue/v-bind-style": 0,
+      "vue/no-v-html": 0,
+      "vue/require-prop-types": 0,
+      "no-eq-null": 0
+    }
   },
   "browserslist": [
     "> 1%",
