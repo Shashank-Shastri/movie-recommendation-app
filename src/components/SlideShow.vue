@@ -1,7 +1,16 @@
 <template>
-    <Carousel :itemsToShow="3" v-if="items.length">
-        <Slide v-for="{ id, imageUrl, link = '', title = '' } in items" :key="id" >
-            <a :href="link" target="_blank"><img style="max-width: 18rem;" class="card-img" :src="imageUrl" :alt="title"></a>
+    <Carousel :items-to-show="3" v-if="items.length">
+        <Slide
+            v-for="{ id, imageUrl, link = '', title = '' } in items"
+            :key="id"
+        >
+            <a :href="link" target="_blank"
+                ><img
+                    style="max-width: 18rem;"
+                    class="card-img"
+                    :src="imageUrl"
+                    :alt="title"
+            /></a>
         </Slide>
 
         <template #addons>
@@ -21,15 +30,16 @@ export default defineComponent({
     name: 'SlideShow',
     props: {
         items: {
-            type: Array
-        }
+            type: Array,
+            default: () => [],
+        },
     },
     components: {
         Carousel,
         Slide,
         Pagination,
-        Navigation
-    }
+        Navigation,
+    },
 });
 </script>
 
