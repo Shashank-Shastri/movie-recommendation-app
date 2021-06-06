@@ -25,7 +25,19 @@ jobs:
             - name: Build files
               run: npm run build
 
-            - name: Upload artifacts
+            - name: Upload artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: dist
+                  path: dist
+
+            - name: Checkout firebase config
+              uses: Bhacaz/checkout-files@v1
+              with:
+                  files: firebase.json .firebaserc
+                  token: ${{ secrets.token }}
+
+            - name: Upload firebase config
               uses: actions/upload-artifact@v2
               with:
                   name: dist
