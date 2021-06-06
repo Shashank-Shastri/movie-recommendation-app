@@ -29,16 +29,8 @@ jobs:
               uses: actions/upload-artifact@v2
               with:
                   name: dist
-                  path: dist
-
-            - name: Checkout firebase config
-              uses: Bhacaz/checkout-files@v1
-              with:
-                  token: ${{ secrets.token }}
-                  files: firebase.json .firebaserc
-
-            - name: Upload firebase config
-              uses: actions/upload-artifact@v2
-              with:
-                  name: dist
-                  path: dist
+                  path: |
+                    dist
+                    firebase.json
+                    .firebaserc
+                  retention-days: 1
