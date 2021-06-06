@@ -42,6 +42,7 @@ jobs:
                 Visit the preview URL for this PR here:
                 - [$URL_1]($URL_1)
                 - [$URL_2]($URL_2)
+                ${{ steps.deploy_preview.outputs.summary }}
 
                 <sub>(expires $EXPIRES)</sub>
                 EOF
