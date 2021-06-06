@@ -1,6 +1,5 @@
 <template>
     <div id="error">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <div class="moon"></div>
         <div :class="i" v-for="i in moonCraters" :key="i"></div>
         <div class="star" :style="i" v-for="i in randomStars" :key="i"></div>
@@ -33,15 +32,6 @@
 </template>
 
 <script>
-import $ from 'jquery'
-
-
-for (var i = 0; i < 100; i++) {
-  var star = '<div class="star" style="animation: twinkle '+((Math.random()*5) + 5)+'s linear '+((Math.random()*5) + 5)+'s infinite; top: '+Math.random()*$(window).height()+'px; left: '+Math.random()*$(window).width()+'px;"></div>';
-  $('body').append(star);
-}
-
-
 let y1 = 160;
 let y2 = 100;
 let y3 = 100;
@@ -123,12 +113,12 @@ export default {
             ctx.beginPath();
             ctx.moveTo(130, 170);
 
-            if(window.matchMedia('(max-width: 400px)').matches) { 
+            if (window.matchMedia('(max-width: 400px)').matches) {
                 ctx.bezierCurveTo(250, y1, 300, y2, 310, y3);
-            } else{
+            } else {
                 ctx.bezierCurveTo(250, y1, 345, y2, 400, y3);
             }
-            
+
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 8;
             ctx.stroke();
@@ -163,7 +153,6 @@ export default {
         },
     },
 };
-
 </script>
 
 <style>
