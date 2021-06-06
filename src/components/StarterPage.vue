@@ -1,6 +1,7 @@
 <template>
     <div class="starter-page">
         <div class="section text-center">
+            Test
             <SlideShow :items="slides" />
             <v-select
                 @search="onSearch"
