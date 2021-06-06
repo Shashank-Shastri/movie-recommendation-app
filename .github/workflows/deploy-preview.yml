@@ -30,10 +30,13 @@ jobs:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
             - name: Set comment message
               run: |
+                EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
                 COMMENT_MESSAGE=$(cat << EOF
                 Visit the preview URL for this PR here:
-                ${{ steps.deploy_preview.outputs.urls }}
-                <sub>expires ${{ steps.deploy_preview.outputs.expire_time }}</sub>
+                - [${{ steps.deploy_preview.outputs.urls[0] }}](${{ steps.deploy_preview.outputs.urls[0] }})
+                - [${{ steps.deploy_preview.outputs.urls[1] }}](${{ steps.deploy_preview.outputs.urls[1] }})
+
+                (<sub>expires $EXPIRES</sub>)
                 EOF
                 )
                 echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
@@ -41,16 +44,18 @@ jobs:
                 echo "EOF" >> $GITHUB_ENV
               id: comment_message
             - name: Comment on PR
-              if: github.event.pull_request.head.repo.full_name == github.repository
-              uses: mshick/add-pr-comment@v1
-              with:
-                repo-token: ${{ secrets.GITHUB_TOKEN }}
-                message: ${{ env.COMMENT_MESSAGE }}
-            - name: Comment on PR
               if: github.event.pull_request.head.repo.full_name != github.repository
               uses: mshick/add-pr-comment@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                repo-token: ${{ secrets.GITHUB_TOKEN }}
+                message: ${{ env.COMMENT_MESSAGE }}
+            - name: Comment on PR from fork
+              if: github.event.pull_request.head.repo.full_name == github.repository
+              uses: mshick/add-pr-comment@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
                 message: |
                   Thanks for your PR 🎉
                   ${{ env.COMMENT_MESSAGE }}
