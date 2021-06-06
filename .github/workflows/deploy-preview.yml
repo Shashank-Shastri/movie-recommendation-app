@@ -25,14 +25,17 @@ jobs:
                 repoToken: '${{ secrets.GITHUB_TOKEN }}'
                 firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MOVIE_RECOMMENDATION_77E17 }}'
                 projectId: movie-recommendation-77e17
-                channelId: 'pr-${{ github.event.pull_request.number }}'
+                channelId: 'pr-preview'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
             - name: Set comment message
               run: |
-                EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
-                URL_1=${{ steps.deploy_preview.outputs.urls[0] }}
-                URL_2=${{ steps.deploy_preview.outputs.urls[1] }}
+                EXPIRES = $(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
+                URL_REGEX = "(.*)","(.*)"
+                URLS = ${{ steps.deploy_preview.outputs.urls }}
+                [[ $URLS =~ ${regex} ]]
+                URL_1 = ${BASH_REMATCH[1]#[}
+                URL_2 = ${BASH_REMATCH[2]%]}
                 COMMENT_MESSAGE=$(cat << EOF
                 Visit the preview URL for this PR here:
                 - [$URL_1]($URL_1)
