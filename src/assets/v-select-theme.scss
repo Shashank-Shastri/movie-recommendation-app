@@ -1,0 +1,122 @@
+// v-select overrides
+body > .vs__dropdown-menu {
+    z-index: 9000;
+}
+
+.v-select {
+
+    .vs__dropdown-toggle,
+    .vs__dropdown-toggle .vs__clear,
+    .vs__dropdown-toggle input,
+    .vs__selected .vs__deselect,
+    .vs__open-indicator {
+        background: #3D3F4C !important;
+        color: #ECECEC !important;
+        fill: #BEC1CE !important;
+    }
+
+    &.disabled {
+
+        .vs__dropdown-toggle,
+        .vs__dropdown-toggle .vs__clear,
+        .vs__dropdown-toggle input,
+        .vs__selected .vs__deselect,
+        .vs__open-indicator {
+            background: #757A8F !important;
+            color: #BEC1CE !important;
+            fill: #BEC1CE !important;
+        }
+
+        .vs__selected {
+            color: #BEC1CE !important;
+        }
+    }
+
+    .vs__open-indicator {
+        &:before {
+            border-color: #626579 !important;
+        }
+    }
+
+    .dropdown-toggle {
+        border-color: #494C5F !important;
+    }
+
+    .vs__selected {
+        color: #ECECEC !important;
+    }
+
+    &:not(.vs--single) {
+        .vs__selected {
+            background-color: #21222A !important;
+            border-color: #494C5F !important;
+            color: #ECECEC !important;
+            font-size: 14px !important;
+
+            .vs__deselect {
+                background-color: transparent !important;
+                text-shadow: none !important;
+                line-height: 0px !important;
+            }
+        }
+    }
+}
+
+.vs__dropdown-menu {
+    background-color: #18191E !important;
+    color: #ECECEC !important;
+    border-color: #494C5F !important;
+
+    li.vs__dropdown-option {
+        color: #ECECEC !important;
+        
+        &.vs__dropdown-option--highlight {
+            background-color: #009BAB !important;
+            color: #ECECEC !important;
+        }
+
+        &.vs__dropdown-option--selected {
+            background-color: #3D3F4C !important;
+            color: #ECECEC !important;
+        }
+    }
+}
+
+.v-select-wrapper {
+    display: inline;
+    font-size: 0.875rem;
+
+    .v-select {
+        .vs__dropdown-toggle {
+            min-height: 40px;
+            background: #FFFFFF;
+
+            .vs__selected-tag {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 90%;
+                position: absolute;
+            }
+
+            .vs__clear {
+                display: none;
+            }
+        }
+
+        .vs__dropdown-menu {
+            font-size: 0.875rem;
+        }
+
+        input[type=search] {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            right: 0;
+        }
+
+        &.vs__open input[type=search] {
+            width: auto !important;
+        }
+    }
+}

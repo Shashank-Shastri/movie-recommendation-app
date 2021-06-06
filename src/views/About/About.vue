@@ -1,16 +1,34 @@
 <template>
     <div>
         <Header />
-        <h1>About Page</h1>
+        <h1 class="white-text">About</h1>
+        <div class="white-text">
+            This website recommends movie based on the cosine similarity of
+            movie cast, keywords, genres and director. To get a recommendation,
+            search for a movie you like, based on the similarity, top 5 similar
+            movies will be listed.
+            <br />
+            The source code of the API can be found here:
+            <a
+                href="https://github.com/Shashank-Shastri/Movie-Recommendation-API"
+                >https://github.com/Shashank-Shastri/Movie-Recommendation-API</a
+            >.
+            <br />
+            The source code of the website can be found here:
+            <a
+                href="https://github.com/Shashank-Shastri/movie-recommendation-app"
+                >https://github.com/Shashank-Shastri/movie-recommendation-app</a
+            >.
+        </div>
     </div>
 </template>
 
 <script>
-import Header from '@/components/Header'
+import Header from '@/components/Header';
 
 export default {
     components: {
-        Header
-    }
+        Header,
+    },
 };
 </script>

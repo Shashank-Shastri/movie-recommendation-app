@@ -1,25 +1,68 @@
-name: Deploy to Preview Channel
+name: Deploy Preview
 
-on: pull_request
+on:
+    workflow_run:
+        workflows:
+            - Build Preview
+        types:
+            - completed
 
 jobs:
-    build_and_preview:
-        if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+    deploy_preview:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout branch
-              uses: actions/checkout@v2
-            - name: Install Dependencies
-              run: npm install
-            - name: Run style check
-              run: npm run lint
-            - name: Build files
-              run: npm run build
+            - name: Download artifact
+              uses: dawidd6/action-download-artifact@v2
+              with:
+                workflow: build-preview.yml
+                pr: ${{github.event.pull_request.number}}
+                name: dist
             - name: Deploy to Firebase
+              id: deploy_preview
               uses: FirebaseExtended/action-hosting-deploy@v0
               with:
                 repoToken: '${{ secrets.GITHUB_TOKEN }}'
                 firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MOVIE_RECOMMENDATION_77E17 }}'
                 projectId: movie-recommendation-77e17
+                channelId: 'pr-preview'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
+            - name: Set comment message
+              run: |
+                EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
+                URL_REGEX="(.*)","(.*)"
+                URLS=${{ steps.deploy_preview.outputs.urls }}
+                [[ $URLS =~ ${regex} ]]
+                URL_1=${BASH_REMATCH[1]#[}
+                echo ${URL_1}
+                URL_2=${BASH_REMATCH[2]%]}
+                echo ${URL_2}
+                COMMENT_MESSAGE=$(cat << EOF
+                Visit the preview URL for this PR here:
+                - [$URL_1]($URL_1)
+                - [$URL_2]($URL_2)
+
+                <sub>(expires $EXPIRES)</sub>
+                EOF
+                )
+                echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
+                echo "$COMMENT_MESSAGE" >> $GITHUB_ENV
+                echo "EOF" >> $GITHUB_ENV
+              id: comment_message
+            - name: Comment on PR
+              if: github.event.pull_request.head.repo.full_name != github.repository
+              uses: mshick/add-pr-comment@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                message: ${{ env.COMMENT_MESSAGE }}
+            - name: Comment on PR from fork
+              if: github.event.pull_request.head.repo.full_name == github.repository
+              uses: mshick/add-pr-comment@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                message: |
+                  Thanks for your PR 🎉
+                  ${{ env.COMMENT_MESSAGE }}

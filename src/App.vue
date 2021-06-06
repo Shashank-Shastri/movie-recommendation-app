@@ -3,13 +3,13 @@
 </template>
 
 <script>
-
 export default {
-    name: 'App'
+    name: 'App',
 };
 </script>
 
 <style>
+@import './assets/styles.scss';
 body {
     background: linear-gradient(
         90deg,

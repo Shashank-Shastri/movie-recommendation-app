@@ -1,16 +1,18 @@
 <template>
     <div>
         <Header />
-        <h1>Home Page</h1>
+        <StarterPage />
     </div>
 </template>
 
 <script>
-import Header from '@/components/Header'
+import Header from '@/components/Header';
+import StarterPage from '@/components/StarterPage';
 
 export default {
     components: {
-        Header
-    }
+        Header,
+        StarterPage,
+    },
 };
 </script>
