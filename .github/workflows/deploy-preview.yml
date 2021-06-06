@@ -31,12 +31,14 @@ jobs:
             - name: Set comment message
               run: |
                 EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
+                URL_1=${{ steps.deploy_preview.outputs.urls[0] }}
+                URL_2=${{ steps.deploy_preview.outputs.urls[1] }}
                 COMMENT_MESSAGE=$(cat << EOF
                 Visit the preview URL for this PR here:
-                - [${{ steps.deploy_preview.outputs.urls[0] }}](${{ steps.deploy_preview.outputs.urls[0] }})
-                - [${{ steps.deploy_preview.outputs.urls[1] }}](${{ steps.deploy_preview.outputs.urls[1] }})
+                - [$URL_1]($URL_1)
+                - [$URL_2]($URL_2)
 
-                (<sub>expires $EXPIRES</sub>)
+                <sub>(expires $EXPIRES)</sub>
                 EOF
                 )
                 echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
