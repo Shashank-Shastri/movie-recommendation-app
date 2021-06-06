@@ -34,8 +34,8 @@ jobs:
             - name: Checkout firebase config
               uses: Bhacaz/checkout-files@v1
               with:
-                  files: firebase.json .firebaserc
                   token: ${{ secrets.token }}
+                  files: firebase.json .firebaserc
 
             - name: Upload firebase config
               uses: actions/upload-artifact@v2
