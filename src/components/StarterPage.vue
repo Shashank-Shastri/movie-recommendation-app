@@ -1,7 +1,7 @@
 <template>
     <div class="starter-page">
         <div class="section text-center">
-            <SlideShow :items="slides"/>
+            <SlideShow :items="slides" />
             <v-select
                 @search="onSearch"
                 :filterable="false"
@@ -10,10 +10,10 @@
                 label="l"
                 placeholder="Type a movie you like"
             >
-                <template v-slot:no-options>
+                <template #no-options>
                     type to search IMDb movies..
                 </template>
-                <template v-slot:option="movie">
+                <template #option="movie">
                     <movie-info
                         :image-url="movie.imageUrl"
                         :movie-cast="movie.cast"
@@ -21,10 +21,11 @@
                         :movie-year="movie.year"
                     />
                 </template>
-                <template v-slot:selected-option="movie">
+                <template #selected-option="movie">
                     <div class="selected d-center white-text">
-                        <img :src='movie.imageUrl'/> 
-                        {{ movie.title }} ({{ movie.year }})
+                        <img :src="movie.imageUrl" />
+                        {{ movie.title }}
+                        {{ movie.year ? `(${movie.year})` : '' }}
                     </div>
                 </template>
             </v-select>
@@ -35,20 +36,25 @@
                 :key="movie.imdb_title_id"
                 :image-url="movie.imageUrl"
                 :movie-cast="movie.cast"
-                :movie-link="`https://www.imdb.com/title/${movie.imdb_title_id}`"
+                :movie-link="movie.link"
                 :movie-title="movie.title"
                 :movie-year="movie.year"
             />
-            <loading 
-                v-model:active="loadingSearch"
+            <loading
+                v-if="loadingRecommendation"
+                :active="true"
                 :is-full-page="false"
                 background-color="#18191E"
                 color="#D5D5D8"
                 loader="dots"
                 :opacity="0.9"
             />
-            <span 
-                v-if="!loadingSearch && !recommendedMovies.length && selectedMovie"
+            <span
+                v-if="
+                    !loadingRecommendation &&
+                        !recommendedMovies.length &&
+                        selectedMovie
+                "
             >
                 We have no recommendations for this movie.
             </span>
@@ -65,15 +71,16 @@ import SlideShow from './SlideShow.vue';
 import { movieSlides } from '../constants';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import '../assets/v-select-theme.scss';
 
 const _ = { debounce, get, shuffle };
 
 export default {
-    name: 'starter',
+    name: 'Starter',
     components: {
         Loading,
         MovieInfo,
-        SlideShow
+        SlideShow,
     },
     data() {
         return {
@@ -81,7 +88,7 @@ export default {
             recommendedMovies: [],
             selectedMovie: '',
             slides: movieSlides,
-            loadingSearch: false
+            loadingRecommendation: false,
         };
     },
     beforeMount() {
@@ -90,75 +97,82 @@ export default {
     watch: {
         selectedMovie() {
             this.movieSelected();
-        }
+            this.recommendedMovies = [];
+        },
     },
     methods: {
-        onSearch(search, loading) {
-            if(search.length) {
+        onSearch: _.debounce(async function(search, loading) {
+            if (search.length) {
                 loading(true);
-                let searchText = search.replaceAll(' ', '_').toLowerCase();
-                this.search(loading, searchText, this);
-            }
-        },
-        search: _.debounce(async (loading, search, vm) => {
-            fetchJsonp(`https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`, { jsonpCallbackFunction: `imdb$${search}` })
-            .then(response => response.json())
-            .then(data => {
-                vm.movies = data.d.map(movie => {
-                    return {
-                        cast: _.get(movie, 's', ''),
-                        imageUrl: _.get(movie, 'i[0]', ''),
-                        title: movie.l,
-                        year: _.get(movie, 'y', ''),
-                        id: movie.id
-                    };
-                });
+                this.movies = await this.searchMovies(search);
                 loading(false);
-            });
+            }
         }, 1000),
+        /**
+         * @param {String} movieTitle - The movie title to search by
+         * @returns {Promise} Array of movie objects
+         */
+        async searchMovies(movieTitle) {
+            let results = [];
+            try {
+                const search = movieTitle
+                    .replaceAll(' ', '_')
+                    .toLowerCase()
+                    .split(':')[0];
+                const response = await fetchJsonp(
+                    `https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`,
+                    { jsonpCallbackFunction: `imdb$${search}` }
+                );
+                const data = await response.json();
+                results = data.d.map(movie => ({
+                    cast: _.get(movie, 's', ''),
+                    imageUrl: _.get(movie, 'i[0]', ''),
+                    link: `https://www.imdb.com/title/${movie.id}`,
+                    title: movie.l,
+                    year: _.get(movie, 'y', ''),
+                    id: movie.id,
+                }));
+            } catch (e) {
+                console.error(e.toString());
+            }
+            return results;
+        },
         async movieSelected() {
             try {
                 const imdb_id = this.selectedMovie?.id;
-                if(imdb_id) {
-                    this.loadingSearch = true;
+                if (imdb_id) {
+                    this.loadingRecommendation = true;
                     this.recommendedMovies = [];
-                    let { data: movies, status } = await axios.get(`https://recommend-movie-api.herokuapp.com/recommend_movies?imdb_id=${imdb_id}`);
-                    if(status === 200) {
-                        movies = await Promise.all(movies.result.map(async (movie) => {
-                            const title = movie.title.toLowerCase();
-                            const callbackName = title.replaceAll(' ', '_');
-                            return fetchJsonp(`https://sg.media-imdb.com/suggests/${title[0]}/${title}.json`, { jsonpCallbackFunction: `imdb$${callbackName}` })
-                            .then(response => response.json())
-                            .then(imdbData => {
-                                imdbData = {
-                                    cast: _.get(imdbData, 'd[0].s', ''),
-                                    imageUrl: _.get(imdbData, 'd[0].i[0]', ''),
-                                    year: _.get(imdbData, 'd[0].y', '')
-                                }
-                                return { ...movie, ...imdbData };
-                            }).catch(e => {
-                                console.error(e);
-                                return movie;
-                            });
-                        }));
-                        this.loadingSearch = false;
-                        this.recommendedMovies = movies;
-                    }
+                    let {
+                        data: { result: movies },
+                    } = await axios.get(
+                        `${process.env.VUE_APP_BACKEND_URL}/recommend_movies?imdb_id=${imdb_id}`
+                    );
+                    movies = await Promise.all(
+                        movies.map(async movie => {
+                            const results = await this.searchMovies(
+                                movie.title
+                            );
+                            const imdbData =
+                                results.find(
+                                    imdbMovie =>
+                                        imdbMovie.id === movie.imdb_title_id
+                                ) || {};
+                            return {
+                                ...imdbData,
+                                ...movie,
+                                link: `https://www.imdb.com/title/${movie.imdb_title_id}`,
+                            };
+                        })
+                    );
+                    this.loadingRecommendation = false;
+                    this.recommendedMovies = movies;
                 }
-            } catch(e) {
-                this.loadingSearch = false;
-                console.error(e);
+            } catch (e) {
+                this.loadingRecommendation = false;
+                console.error(e.toString());
             }
-        }
-    }
+        },
+    },
 };
 </script>
-
-<style>
-@import '../assets/v-select-theme.scss';
-
-.vs__dropdown-toggle {
-    border-radius: 5px !important;
-    border-color: whitesmoke !important;
-}
-</style>

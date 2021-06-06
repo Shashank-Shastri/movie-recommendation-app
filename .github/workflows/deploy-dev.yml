@@ -13,16 +13,13 @@ jobs:
               uses: actions/checkout@v2
 
             - name: Retrieve npm cache (if any)
-              uses: actions/cache@v1
+              uses: actions/cache@v2.1.6
               with:
                   path: ~/.npm
                   key: npm-packages
 
             - name: Install Dependencies
               run: npm install
-
-            - name: Run style check
-              run: npm run lint
 
             - name: Build files
               run: npm run build

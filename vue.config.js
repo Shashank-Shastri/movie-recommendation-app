@@ -5,9 +5,9 @@ module.exports = {
                 {
                     test: /@?(vue-select).*\.(ts|js)x?$/,
                     include: /node_modules/,
-                    loader: 'babel-loader'
-                }
-            ]
-        }
-    }
+                    loader: 'babel-loader',
+                },
+            ],
+        },
+    },
 };
