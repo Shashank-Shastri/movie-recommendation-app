@@ -19,11 +19,38 @@ jobs:
                 pr: ${{github.event.pull_request.number}}
                 name: dist
             - name: Deploy to Firebase
+              id: deploy_preview
               uses: FirebaseExtended/action-hosting-deploy@v0
               with:
                 repoToken: '${{ secrets.GITHUB_TOKEN }}'
                 firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MOVIE_RECOMMENDATION_77E17 }}'
                 projectId: movie-recommendation-77e17
-                channelId: 'pr-${{ github.event.number }}'
+                channelId: 'pr-${{ github.event.pull_request.number }}'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
+            - name: Set comment message
+              run: |
+                COMMENT_MESSAGE=$(cat << EOF
+                Visit the preview URL for this PR here:
+                ${{ steps.deploy_preview.outputs.urls }}
+                <sub>expires ${{ steps.deploy_preview.outputs.expire_time }}</sub>
+                EOF
+                )
+                echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
+                echo "$COMMENT_MESSAGE" >> $GITHUB_ENV
+                echo "EOF" >> $GITHUB_ENV
+              id: comment_message
+            - name: Comment on PR
+              if: github.event.pull_request.head.repo.full_name == github.repository
+              uses: mshick/add-pr-comment@v1
+              with:
+                repo-token: ${{ secrets.GITHUB_TOKEN }}
+                message: ${{ env.COMMENT_MESSAGE }}
+            - name: Comment on PR
+              if: github.event.pull_request.head.repo.full_name != github.repository
+              uses: mshick/add-pr-comment@v1
+              with:
+                repo-token: ${{ secrets.GITHUB_TOKEN }}
+                message: |
+                  Thanks for your PR 🎉
+                  ${{ env.COMMENT_MESSAGE }}
