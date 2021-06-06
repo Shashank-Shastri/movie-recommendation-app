@@ -71,6 +71,7 @@ import SlideShow from './SlideShow.vue';
 import { movieSlides } from '../constants';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
+import '../assets/v-select-theme.scss';
 
 const _ = { debounce, get, shuffle };
 
@@ -105,7 +106,7 @@ export default {
                 loading(true);
                 this.movies = await this.searchMovies(search);
                 loading(false);
-            } else this.movies = [];
+            }
         }, 1000),
         /**
          * @param {String} movieTitle - The movie title to search by
@@ -114,7 +115,10 @@ export default {
         async searchMovies(movieTitle) {
             let results = [];
             try {
-                const search = movieTitle.replaceAll(' ', '_').toLowerCase();
+                const search = movieTitle
+                    .replaceAll(' ', '_')
+                    .toLowerCase()
+                    .split(':')[0];
                 const response = await fetchJsonp(
                     `https://sg.media-imdb.com/suggests/${search[0]}/${search}.json`,
                     { jsonpCallbackFunction: `imdb$${search}` }
@@ -129,7 +133,7 @@ export default {
                     id: movie.id,
                 }));
             } catch (e) {
-                console.error(e);
+                console.error(e.toString());
             }
             return results;
         },
@@ -146,9 +150,14 @@ export default {
                     );
                     movies = await Promise.all(
                         movies.map(async movie => {
-                            const [imdbData] = await this.searchMovies(
+                            const results = await this.searchMovies(
                                 movie.title
                             );
+                            const imdbData =
+                                results.find(
+                                    imdbMovie =>
+                                        imdbMovie.id === movie.imdb_title_id
+                                ) || {};
                             return {
                                 ...imdbData,
                                 ...movie,
@@ -161,18 +170,9 @@ export default {
                 }
             } catch (e) {
                 this.loadingRecommendation = false;
-                console.error(e);
+                console.error(e.toString());
             }
         },
     },
 };
 </script>
-
-<style>
-@import '../assets/v-select-theme.scss';
-
-.vs__dropdown-toggle {
-    border-radius: 5px !important;
-    border-color: whitesmoke !important;
-}
-</style>
