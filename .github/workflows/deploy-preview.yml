@@ -1,27 +1,19 @@
-name: Deploy to Preview Channel
+name: Deploy Preview
 
-on: pull_request
+on:
+    workflow_run:
+        workflows: ["Build Preview"]
+        types: [completed]
 
 jobs:
-    build_and_preview:
-        if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+    deploy_preview:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout branch
-              uses: actions/checkout@v2
-
-            - name: Retrieve npm cache (if any)
-              uses: actions/cache@v2.1.6
+            - name: Download artifacts
+              uses: actions/download-artifact@v2
               with:
-                  path: ~/.npm
-                  key: npm-packages
-
-            - name: Install Dependencies
-              run: npm install
-
-            - name: Build files
-              run: npm run build
-
+                name: dist
             - name: Deploy to Firebase
               uses: FirebaseExtended/action-hosting-deploy@v0
               with:

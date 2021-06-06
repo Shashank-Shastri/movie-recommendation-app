@@ -1,0 +1,32 @@
+name: Build Preview
+
+on:
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    build_preview:
+        if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout branch
+              uses: actions/checkout@v2
+
+            - name: Retrieve npm cache (if any)
+              uses: actions/cache@v2.1.6
+              with:
+                  path: ~/.npm
+                  key: npm-packages
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Build files
+              run: npm run build
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                  name: dist
+                  path: dist
