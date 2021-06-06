@@ -42,7 +42,9 @@ jobs:
                 Visit the preview URL for this PR here:
                 - [$URL_1]($URL_1)
                 - [$URL_2]($URL_2)
-                ${{ steps.deploy_preview.outputs.output.summary }}
+                ${{ fromJSON(steps.deploy_preview.outputs.urls) }}
+                ${{ fromJSON(steps.deploy_preview.outputs.urls)[0] }}
+                ${{ fromJSON(steps.deploy_preview.outputs.urls)[1] }}
 
                 <sub>(expires $EXPIRES)</sub>
                 EOF
