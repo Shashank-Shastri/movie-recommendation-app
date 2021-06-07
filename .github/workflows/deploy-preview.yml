@@ -9,7 +9,9 @@ on:
 
 jobs:
     deploy_preview:
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]')
         runs-on: ubuntu-latest
         steps:
             - name: Download artifact
