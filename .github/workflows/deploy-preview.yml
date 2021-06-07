@@ -33,12 +33,15 @@ jobs:
             - name: Set comment message
               id: comment_message
               run: |
+                EVENT_FILE=`cat ./event.json`
+                IS_FORK=`echo $(jq -r '.pull_request.head.repo.fork' <<< "$EVENT_FILE")`
+
                 EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
 
                 URL_1=${{ fromJSON(steps.deploy_preview.outputs.urls)[0] }}
                 URL_2=${{ fromJSON(steps.deploy_preview.outputs.urls)[1] }}
 
-                if $(${{ github.event.workflow_run.repository.fork }})
+                if $(IS_FORK)
                 then
                   THANKS=Thanks for your PR 🎉
                 else
