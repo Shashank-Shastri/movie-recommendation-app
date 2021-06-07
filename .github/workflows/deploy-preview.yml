@@ -89,5 +89,5 @@ jobs:
                       issue_number: pr_number,
                       owner: context.repo.owner,
                       repo: context.repo.repo,
-                      body: env.COMMENT_MESSAGE
+                      body: context.env.COMMENT_MESSAGE
                     });
