@@ -61,3 +61,13 @@ jobs:
                 message: |
                   Thanks for your PR 🎉
                   ${{ env.COMMENT_MESSAGE }}
+
+            - name: Output event payload
+              run: cp $GITHUB_EVENT_PATH ./
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: event
+                  path: event.json
+                  retention-days: 1
