@@ -41,7 +41,7 @@ jobs:
                 URL_1=${{ fromJSON(steps.deploy_preview.outputs.urls)[0] }}
                 URL_2=${{ fromJSON(steps.deploy_preview.outputs.urls)[1] }}
 
-                if $(IS_FORK)
+                if $($IS_FORK)
                 then
                   THANKS=Thanks for your PR 🎉
                 else
