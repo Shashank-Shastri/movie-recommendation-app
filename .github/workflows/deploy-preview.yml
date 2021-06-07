@@ -16,7 +16,7 @@ jobs:
               uses: dawidd6/action-download-artifact@v2
               with:
                 workflow: build-preview.yml
-                pr: ${{github.event.pull_request.number}}
+                commit: ${{ github.event.pull_request.head.sha }}
                 name: dist
             - name: Deploy to Firebase
               id: deploy_preview
