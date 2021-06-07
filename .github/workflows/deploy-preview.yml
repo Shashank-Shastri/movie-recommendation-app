@@ -82,10 +82,12 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                    const pr_number = context.ref.match(/pull\/(\d+)\//)[1] || context.issue.number;
+                    console.log(context.ref);
+                    let pr_number = context.ref.match(/pull\/(\d+)\//);
+                    pr_number = pr_number ? pr_number[1] : context.issue.number;
                     github.issues.createComment({
                       issue_number: pr_number,
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       body: env.COMMENT_MESSAGE
-                    })
+                    });
