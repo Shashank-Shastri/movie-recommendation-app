@@ -18,6 +18,7 @@ jobs:
                 workflow: build-preview.yml
                 commit: ${{ github.event.workflow_run.head_sha }}
                 name: dist
+
             - name: Deploy to Firebase
               id: deploy_preview
               uses: FirebaseExtended/action-hosting-deploy@v0
@@ -28,12 +29,24 @@ jobs:
                 channelId: 'pr-${{ github.event.workflow_run.head_branch }}'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
+
             - name: Set comment message
+              id: comment_message
               run: |
                 EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
+
                 URL_1=${{ fromJSON(steps.deploy_preview.outputs.urls)[0] }}
                 URL_2=${{ fromJSON(steps.deploy_preview.outputs.urls)[1] }}
+
+                if $(${{ github.event.workflow_run.repository.fork }})
+                then
+                  THANKS=Thanks for your PR 🎉
+                else
+                  THANKS=
+                fi
+
                 COMMENT_MESSAGE=$(cat << EOF
+                $THANKS
                 Visit the preview URL for this PR here:
                 - [$URL_1]($URL_1)
                 - [$URL_2]($URL_2)
@@ -41,23 +54,38 @@ jobs:
                 <sub>(expires $EXPIRES)</sub>
                 EOF
                 )
+
                 echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
                 echo "$COMMENT_MESSAGE" >> $GITHUB_ENV
                 echo "EOF" >> $GITHUB_ENV
-              id: comment_message
+
+            # - name: Comment on PR
+            #   if: !github.event.workflow_run.repository.fork
+            #   uses: mshick/add-pr-comment@v1
+            #   env:
+            #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   with:
+            #     message: ${{ env.COMMENT_MESSAGE }}
+
+            # - name: Comment on PR from fork
+            #   if: github.event.workflow_run.repository.fork
+            #   uses: mshick/add-pr-comment@v1
+            #   env:
+            #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   with:
+            #     message: |
+            #       Thanks for your PR 🎉
+            #       ${{ env.COMMENT_MESSAGE }}
+
             - name: Comment on PR
-              if: "!github.event.workflow_run.repository.fork"
-              uses: mshick/add-pr-comment@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: actions/github-script@v3
               with:
-                message: ${{ env.COMMENT_MESSAGE }}
-            - name: Comment on PR from fork
-              if: github.event.workflow_run.repository.fork
-              uses: mshick/add-pr-comment@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                message: |
-                  Thanks for your PR 🎉
-                  ${{ env.COMMENT_MESSAGE }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                    const pr_number = context.ref.match(/pull\/(\d+)\//)?.[1] ?? context.issue.number;
+                    github.issues.createComment({
+                      issue_number: pr_number,
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      body: env.COMMENT_MESSAGE
+                    })
