@@ -16,7 +16,7 @@ jobs:
               uses: dawidd6/action-download-artifact@v2
               with:
                 workflow: build-preview.yml
-                pr: ${{github.event.pull_request.number}}
+                commit: ${{ github.event.workflow_run.head_sha }}
                 name: dist
             - name: Deploy to Firebase
               id: deploy_preview
@@ -25,7 +25,7 @@ jobs:
                 repoToken: '${{ secrets.GITHUB_TOKEN }}'
                 firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MOVIE_RECOMMENDATION_77E17 }}'
                 projectId: movie-recommendation-77e17
-                channelId: 'pr-preview'
+                channelId: 'pr-${{ github.event.workflow_run.head_branch }}'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
             - name: Set comment message
@@ -46,14 +46,14 @@ jobs:
                 echo "EOF" >> $GITHUB_ENV
               id: comment_message
             - name: Comment on PR
-              if: github.event.pull_request.head.repo.full_name != github.repository
+              if: "!github.event.workflow_run.repository.fork"
               uses: mshick/add-pr-comment@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                 message: ${{ env.COMMENT_MESSAGE }}
             - name: Comment on PR from fork
-              if: github.event.pull_request.head.repo.full_name == github.repository
+              if: github.event.workflow_run.repository.fork
               uses: mshick/add-pr-comment@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,13 +61,3 @@ jobs:
                 message: |
                   Thanks for your PR 🎉
                   ${{ env.COMMENT_MESSAGE }}
-
-            - name: Output event payload
-              run: cp $GITHUB_EVENT_PATH ./
-
-            - name: Upload artifact
-              uses: actions/upload-artifact@v2
-              with:
-                  name: event
-                  path: event.json
-                  retention-days: 1
