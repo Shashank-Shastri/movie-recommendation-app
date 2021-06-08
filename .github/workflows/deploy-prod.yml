@@ -38,10 +38,11 @@ jobs:
               uses: actions/github-script@v3
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
+                  PR_NUMBER: '${{ github.event.pull_request.number }}'
                   script: |
                     github.issues.createComment({
                         body: '🚀 Successfully deployed to: [https://movie-recommendation.shashanks.ga](https://movie-recommendation-dev.shashanks.ga)',
-                        issue_number: context.issue.number,
+                        issue_number: process.env.PR_NUMBER,
                         owner: context.repo.owner,
                         repo: context.repo.repo,
                     });
