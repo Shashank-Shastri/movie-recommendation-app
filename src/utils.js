@@ -1,4 +1,4 @@
-export function debounce(func, wait, immediate) {
+function debounce(func, wait, immediate) {
     let timeout;
     return function() {
         const context = this;
@@ -28,4 +28,16 @@ export function shuffle(array) {
         result[index] = value;
     }
     return result;
+}
+
+export function asyncDebounce(func, wait) {
+    const debounced = debounce((resolve, reject, args) => {
+        func(...args)
+            .then(resolve)
+            .catch(reject);
+    }, wait);
+    return (...args) =>
+        new Promise((resolve, reject) => {
+            debounced(resolve, reject, args);
+        });
 }
