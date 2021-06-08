@@ -64,7 +64,7 @@
 
 <script>
 import axios from 'axios';
-import { debounce, shuffle } from '../utils';
+import { asyncDebounce, shuffle } from '../utils';
 import MovieInfo from './MovieInfo.vue';
 import fetchJsonp from 'fetch-jsonp';
 import SlideShow from './SlideShow.vue';
@@ -98,14 +98,19 @@ export default {
             this.recommendedMovies = [];
         },
     },
+    computed: {
+        debouncedSearchMovies() {
+            return asyncDebounce(this.searchMovies, 1000);
+        },
+    },
     methods: {
-        onSearch: debounce(async function(search, loading) {
+        async onSearch(search, loading) {
             if (search.length) {
                 loading(true);
-                this.movies = await this.searchMovies(search);
+                this.movies = await this.debouncedSearchMovies(search);
                 loading(false);
             }
-        }, 1000),
+        },
         /**
          * @param {String} movieTitle - The movie title to search by
          * @returns {Promise} Array of movie objects
