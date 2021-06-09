@@ -1,0 +1,33 @@
+name: Deploy to Dev
+
+on:
+    push:
+        branches:
+            - test-branch
+jobs:
+    deploy_dev_website:
+        if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+        runs-on: ubuntu-latest
+        steps:
+            - name: Output event payload
+              run: cp $GITHUB_EVENT_PATH ./
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: dist
+                  path: event.json
+
+            # - name: Comment on PR
+            #   uses: actions/github-script@v3
+            #   env:
+            #    PR_NUMBER: '${{ github.event.pull_request.number }}'
+            #   with:
+            #       github-token: ${{ secrets.GITHUB_TOKEN }}
+            #       script: |
+            #         github.issues.createComment({
+            #             body: '🚀 Successfully deployed to: [https://movie-recommendation-dev.shashanks.ga](https://movie-recommendation-dev.shashanks.ga)',
+            #             issue_number: process.env.PR_NUMBER,
+            #             owner: context.repo.owner,
+            #             repo: context.repo.repo,
+            #         });
