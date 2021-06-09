@@ -9,25 +9,19 @@ jobs:
         if: "!contains(github.event.head_commit.message, '[skip-ci]')"
         runs-on: ubuntu-latest
         steps:
-            - name: Output event payload
-              run: cp $GITHUB_EVENT_PATH ./
-
-            - name: Upload artifact
-              uses: actions/upload-artifact@v2
-              with:
-                  name: dist
-                  path: event.json
-
             - name: Comment on PR
               uses: actions/github-script@v3
               env:
-               PR_NUMBER: '${{ github.event.pull_request.number }}'
+               MERGE_COMMIT_MESSAGE: '${{ github.event.head_commit.message }}'
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                    github.issues.createComment({
-                        body: '🚀 Successfully deployed to: [https://movie-recommendation-dev.shashanks.ga](https://movie-recommendation-dev.shashanks.ga)',
-                        issue_number: process.env.PR_NUMBER,
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                    });
+                    const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
+                    if(prNumber) {
+                        github.issues.createComment({
+                            body: '🚀 Successfully deployed to: [https://movie-recommendation-dev.shashanks.ga](https://movie-recommendation-dev.shashanks.ga)',
+                            issue_number: prNumber,
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                        });
+                    }
