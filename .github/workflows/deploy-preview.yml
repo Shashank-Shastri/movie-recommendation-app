@@ -9,15 +9,18 @@ on:
 
 jobs:
     deploy_preview:
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: |
+          github.event.workflow_run.conclusion == 'success' &&
+          !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]')
         runs-on: ubuntu-latest
         steps:
             - name: Download artifact
               uses: dawidd6/action-download-artifact@v2
               with:
                 workflow: build-preview.yml
-                pr: ${{github.event.pull_request.number}}
+                commit: ${{ github.event.workflow_run.head_sha }}
                 name: dist
+
             - name: Deploy to Firebase
               id: deploy_preview
               uses: FirebaseExtended/action-hosting-deploy@v0
@@ -25,44 +28,81 @@ jobs:
                 repoToken: '${{ secrets.GITHUB_TOKEN }}'
                 firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_MOVIE_RECOMMENDATION_77E17 }}'
                 projectId: movie-recommendation-77e17
-                channelId: 'pr-preview'
+                channelId: 'pr-${{ github.event.workflow_run.head_branch }}'
               env:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
+
             - name: Set comment message
+              id: comment_message
               run: |
+                EVENT_FILE=`cat ./event.json`
+                IS_FORK=`echo $(jq -r '.pull_request.head.repo.fork' <<< "$EVENT_FILE")`
+
                 EXPIRES=$(date --date='${{ steps.deploy_preview.outputs.expire_time }}')
-                URL_REGEX="(.*)","(.*)"
-                URLS=${{ steps.deploy_preview.outputs.urls }}
-                [[ $URLS =~ ${regex} ]]
-                URL_1=${BASH_REMATCH[1]#[}
-                echo ${URL_1}
-                URL_2=${BASH_REMATCH[2]%]}
-                echo ${URL_2}
+
+                URL_1=${{ fromJSON(steps.deploy_preview.outputs.urls)[0] }}
+                URL_2=${{ fromJSON(steps.deploy_preview.outputs.urls)[1] }}
+
+                if $IS_FORK
+                then
+                  THANKS="Thanks for your PR 🎉"
+                else
+                  THANKS=""
+                fi
+
                 COMMENT_MESSAGE=$(cat << EOF
-                Visit the preview URL for this PR here:
+                $THANKS
+                Visit the preview URL for this PR (updated for commit ${{ github.event.workflow_run.head_sha }}):
                 - [$URL_1]($URL_1)
                 - [$URL_2]($URL_2)
 
                 <sub>(expires $EXPIRES)</sub>
                 EOF
                 )
+
                 echo "COMMENT_MESSAGE<<EOF" >> $GITHUB_ENV
                 echo "$COMMENT_MESSAGE" >> $GITHUB_ENV
                 echo "EOF" >> $GITHUB_ENV
-              id: comment_message
+                            
+            - name: Parse PR number
+              id: pr_number
+              run: |
+                EVENT_FILE=`cat ./event.json`
+                PR_NUMBER=`echo $(jq -r '.number' <<< "$EVENT_FILE")`
+                echo "::set-output name=pr_number::$PR_NUMBER"
+
             - name: Comment on PR
-              if: github.event.pull_request.head.repo.full_name != github.repository
-              uses: mshick/add-pr-comment@v1
+              uses: actions/github-script@v4.0.2
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+               COMMENT_MESSAGE: '${{ env.COMMENT_MESSAGE }}'
+               PR_NUMBER: '${{ steps.pr_number.outputs.pr_number }}'
               with:
-                message: ${{ env.COMMENT_MESSAGE }}
-            - name: Comment on PR from fork
-              if: github.event.pull_request.head.repo.full_name == github.repository
-              uses: mshick/add-pr-comment@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                message: |
-                  Thanks for your PR 🎉
-                  ${{ env.COMMENT_MESSAGE }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                    // Get the existing comments.
+                    const { data: comments } = await github.issues.listComments({
+                        issue_number: process.env.PR_NUMBER,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                    });
+                    // Find any comment already made by the bot.
+                    const botComment = comments.find(
+                        comment =>
+                            comment.user.type === 'Bot' &&
+                            comment.body.includes('Visit the preview URL for this PR')
+                    );
+                    if (botComment) {
+                        await github.issues.updateComment({
+                            body: process.env.COMMENT_MESSAGE,
+                            comment_id: botComment.id,
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                        });
+                    } else {
+                        await github.issues.createComment({
+                            body: process.env.COMMENT_MESSAGE,
+                            issue_number: process.env.PR_NUMBER,
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                        });
+                    }

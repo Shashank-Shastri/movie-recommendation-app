@@ -19,6 +19,10 @@
                 href="https://github.com/Shashank-Shastri/movie-recommendation-app"
                 >https://github.com/Shashank-Shastri/movie-recommendation-app</a
             >.
+            <br />
+            To learn more about me, visit here:
+            <a href="https://whoami.shashanks.ga">https://whoami.shashanks.ga</a
+            >.
         </div>
     </div>
 </template>

@@ -64,7 +64,7 @@
 
 <script>
 import axios from 'axios';
-import { debounce, get, shuffle } from 'lodash';
+import { asyncDebounce, shuffle } from '../utils';
 import MovieInfo from './MovieInfo.vue';
 import fetchJsonp from 'fetch-jsonp';
 import SlideShow from './SlideShow.vue';
@@ -72,8 +72,6 @@ import { movieSlides } from '../constants';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import '../assets/v-select-theme.scss';
-
-const _ = { debounce, get, shuffle };
 
 export default {
     name: 'Starter',
@@ -92,7 +90,7 @@ export default {
         };
     },
     beforeMount() {
-        this.slides = _.shuffle(this.slides);
+        this.slides = shuffle(this.slides);
     },
     watch: {
         selectedMovie() {
@@ -100,14 +98,19 @@ export default {
             this.recommendedMovies = [];
         },
     },
+    computed: {
+        debouncedSearchMovies() {
+            return asyncDebounce(this.searchMovies, 1000);
+        },
+    },
     methods: {
-        onSearch: _.debounce(async function(search, loading) {
+        async onSearch(search, loading) {
             if (search.length) {
                 loading(true);
-                this.movies = await this.searchMovies(search);
+                this.movies = await this.debouncedSearchMovies(search);
                 loading(false);
             }
-        }, 1000),
+        },
         /**
          * @param {String} movieTitle - The movie title to search by
          * @returns {Promise} Array of movie objects
@@ -125,11 +128,11 @@ export default {
                 );
                 const data = await response.json();
                 results = data.d.map(movie => ({
-                    cast: _.get(movie, 's', ''),
-                    imageUrl: _.get(movie, 'i[0]', ''),
+                    cast: movie?.s ?? '',
+                    imageUrl: movie?.i?.[0] ?? '',
                     link: `https://www.imdb.com/title/${movie.id}`,
                     title: movie.l,
-                    year: _.get(movie, 'y', ''),
+                    year: movie?.y ?? '',
                     id: movie.id,
                 }));
             } catch (e) {

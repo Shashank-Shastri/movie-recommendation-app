@@ -33,3 +33,20 @@ jobs:
                   target: dev
               env:
                   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+            - name: Comment on PR
+              uses: actions/github-script@v4.0.2
+              env:
+                  MERGE_COMMIT_MESSAGE: '${{ github.event.head_commit.message }}'
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  script: |
+                    const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
+                    if(prNumber) {
+                        github.issues.createComment({
+                            body: '🚀 Successfully deployed to [https://movie-recommendation-dev.shashanks.ga](https://movie-recommendation-dev.shashanks.ga)',
+                            issue_number: prNumber,
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                        });
+                    }
