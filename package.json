@@ -13,7 +13,7 @@
     "fetch-jsonp": "^1.1.3",
     "sass": "^1.35.1",
     "sass-loader": "10.1.1",
-    "vue": "^3.0.0",
+    "vue": "^3.1.2",
     "vue-loading-overlay": "^4.0.3",
     "vue-router": "^4.0.10",
     "vue-select": "https://github.com/wolfjagger/vue-select/tarball/feat/vue-3-compat",
