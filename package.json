@@ -10,14 +10,14 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.16.0",
-    "fetch-jsonp": "^1.1.3",
+    "fetch-jsonp": "^1.2.0",
     "sass": "^1.37.2",
     "sass-loader": "10.1.1",
     "vue": "^3.0.0",
     "vue-loading-overlay": "^4.0.3",
     "vue-router": "^4.0.10",
     "vue-select": "https://github.com/wolfjagger/vue-select/tarball/feat/vue-3-compat",
-    "vue3-carousel": "^0.1.24"
+    "vue3-carousel": "^0.1.25"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.13",
