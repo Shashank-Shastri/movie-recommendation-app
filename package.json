@@ -15,7 +15,7 @@
     "sass-loader": "10.1.1",
     "vue": "^3.0.0",
     "vue-loading-overlay": "^4.0.3",
-    "vue-router": "^4.0.10",
+    "vue-router": "^4.0.11",
     "vue-select": "https://github.com/wolfjagger/vue-select/tarball/feat/vue-3-compat",
     "vue3-carousel": "^0.1.25"
   },
