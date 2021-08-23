@@ -72,7 +72,7 @@ jobs:
                 echo "::set-output name=pr_number::$PR_NUMBER"
 
             - name: Comment on PR
-              uses: actions/github-script@v4.0.2
+              uses: actions/github-script@v4.1
               env:
                COMMENT_MESSAGE: '${{ env.COMMENT_MESSAGE }}'
                PR_NUMBER: '${{ steps.pr_number.outputs.pr_number }}'
