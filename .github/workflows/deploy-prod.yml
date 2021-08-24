@@ -35,7 +35,7 @@ jobs:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
 
             - name: Comment on PR
-              uses: actions/github-script@v4.0.2
+              uses: actions/github-script@v4.1
               env:
                   MERGE_COMMIT_MESSAGE: '${{ github.event.head_commit.message }}'
               with:
