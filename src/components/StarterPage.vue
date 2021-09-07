@@ -2,18 +2,18 @@
     <div class="starter-page">
         <div class="section text-center">
             <SlideShow :items="slides" />
-            <v-select
-                @search="onSearch"
-                :filterable="false"
-                :options="movies"
-                v-model="selectedMovie"
-                label="l"
+
+            <Multiselect
+                :delay="0"
+                :filterResults="false"
+                :options="async query => await debouncedSearchMovies(query)"
+                :resolve-on-load="false"
+                no-options-text="type to search IMDb movies.."
                 placeholder="Type a movie you like"
+                searchable
+                v-model="selectedMovie"
             >
-                <template #no-options>
-                    type to search IMDb movies..
-                </template>
-                <template #option="movie">
+                <template #option="{ option: movie }">
                     <movie-info
                         :image-url="movie.imageUrl"
                         :movie-cast="movie.cast"
@@ -21,14 +21,14 @@
                         :movie-year="movie.year"
                     />
                 </template>
-                <template #selected-option="movie">
+                <template #singlelabel="{ value: movie }">
                     <div class="selected d-center white-text">
                         <img :src="movie.imageUrl" />
                         {{ movie.title }}
                         {{ movie.year ? `(${movie.year})` : '' }}
                     </div>
                 </template>
-            </v-select>
+            </Multiselect>
         </div>
         <div class="section">
             <movie-info
@@ -43,11 +43,10 @@
             <loading
                 v-if="loadingRecommendation"
                 :active="true"
-                :is-full-page="false"
+                :opacity="0.9"
                 background-color="#18191E"
                 color="#D5D5D8"
                 loader="dots"
-                :opacity="0.9"
             />
             <span
                 v-if="
@@ -65,18 +64,19 @@
 <script>
 import axios from 'axios';
 import { asyncDebounce, shuffle } from '../utils';
+import Multiselect from '@vueform/multiselect';
 import MovieInfo from './MovieInfo.vue';
 import fetchJsonp from 'fetch-jsonp';
 import SlideShow from './SlideShow.vue';
 import { movieSlides } from '../constants';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
-import '../assets/v-select-theme.scss';
 
 export default {
     name: 'Starter',
     components: {
         Loading,
+        Multiselect,
         MovieInfo,
         SlideShow,
     },
@@ -94,8 +94,8 @@ export default {
     },
     watch: {
         selectedMovie() {
-            this.movieSelected();
             this.recommendedMovies = [];
+            this.movieSelected();
         },
     },
     computed: {
@@ -104,19 +104,13 @@ export default {
         },
     },
     methods: {
-        async onSearch(search, loading) {
-            if (search.length) {
-                loading(true);
-                this.movies = await this.debouncedSearchMovies(search);
-                loading(false);
-            }
-        },
         /**
          * @param {String} movieTitle - The movie title to search by
          * @returns {Promise} Array of movie objects
          */
         async searchMovies(movieTitle) {
             let results = [];
+            if (!movieTitle) return results;
             try {
                 const search = movieTitle
                     .replaceAll(' ', '_')
@@ -179,3 +173,5 @@ export default {
     },
 };
 </script>
+
+<style src="@vueform/multiselect/themes/default.css"></style>
