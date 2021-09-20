@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.21.2",
-    "core-js": "^3.17.3",
+    "core-js": "^3.18.0",
     "fetch-jsonp": "^1.2.1",
     "sass": "^1.39.2",
     "sass-loader": "10.1.1",
