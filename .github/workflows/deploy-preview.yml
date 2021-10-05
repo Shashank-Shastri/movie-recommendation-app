@@ -80,7 +80,7 @@ jobs:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
                     // Get the existing comments.
-                    const { data: comments } = await github.issues.listComments({
+                    const { data: comments } = await github.rest.issues.listComments({
                         issue_number: process.env.PR_NUMBER,
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -92,14 +92,14 @@ jobs:
                             comment.body.includes('Visit the preview URL for this PR')
                     );
                     if (botComment) {
-                        await github.issues.updateComment({
+                        await github.rest.issues.updateComment({
                             body: process.env.COMMENT_MESSAGE,
                             comment_id: botComment.id,
                             owner: context.repo.owner,
                             repo: context.repo.repo,
                         });
                     } else {
-                        await github.issues.createComment({
+                        await github.rest.issues.createComment({
                             body: process.env.COMMENT_MESSAGE,
                             issue_number: process.env.PR_NUMBER,
                             owner: context.repo.owner,
