@@ -17,7 +17,7 @@
     "vue-loading-overlay": "^4.0.4",
     "vue-router": "^4.0.12",
     "vue-select": "https://github.com/wolfjagger/vue-select/tarball/feat/vue-3-compat",
-    "vue3-carousel": "^0.1.29"
+    "vue3-carousel": "^0.1.36"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.14",
