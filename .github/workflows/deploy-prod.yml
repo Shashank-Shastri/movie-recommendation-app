@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout branch
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Retrieve npm cache (if any)
               uses: actions/cache@v2.1.7
@@ -35,7 +35,7 @@ jobs:
                   FIREBASE_CLI_PREVIEWS: hostingchannels
 
             - name: Comment on PR
-              uses: actions/github-script@v5
+              uses: actions/github-script@v6
               env:
                   MERGE_COMMIT_MESSAGE: '${{ github.event.head_commit.message }}'
               with:
