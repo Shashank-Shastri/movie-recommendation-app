@@ -20,7 +20,7 @@
     "vue3-carousel": "^0.1.36"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.1",
+    "@vue/cli-plugin-babel": "~5.0.4",
     "@vue/cli-plugin-eslint": "~5.0.1",
     "@vue/cli-service": "~5.0.4",
     "@vue/compiler-sfc": "^3.0.0",
