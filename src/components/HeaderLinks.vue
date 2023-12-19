@@ -1,6 +1,6 @@
 <template>
     <div>
-        <router-link :to="{ name: 'Home' }"
+        <router-link :to="{ name: 'HomePage' }"
             ><img src="/assets/favicon.png"
         /></router-link>
         <div id="nav">
