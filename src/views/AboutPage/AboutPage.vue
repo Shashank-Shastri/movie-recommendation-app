@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Header />
+        <HeaderLinks />
         <h1 class="white-text">About</h1>
         <div class="white-text">
             This website recommends movie based on the cosine similarity of
@@ -21,18 +21,17 @@
             >.
             <br />
             To learn more about me, visit here:
-            <a href="https://whoami.shashanks.ga">https://whoami.shashanks.ga</a
-            >.
+            <a href="https://techieshank.com">https://techieshank.com</a>.
         </div>
     </div>
 </template>
 
 <script>
-import Header from '@/components/Header';
+import HeaderLinks from '@/components/HeaderLinks';
 
 export default {
     components: {
-        Header,
+        HeaderLinks,
     },
 };
 </script>

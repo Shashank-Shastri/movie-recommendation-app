@@ -10,19 +10,26 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout branch
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
-            - name: Retrieve npm cache (if any)
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+            - name: Retrieve yarn cache (if any)
               uses: actions/cache@v3
+              id: yarn-cache
               with:
-                  path: ~/.npm
-                  key: npm-packages
+                  path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
 
             - name: Install Dependencies
-              run: npm install
+              run: yarn install
 
             - name: Build files
-              run: npm run build
+              run: yarn build
 
             - name: Deploy to Firebase
               uses: FirebaseExtended/action-hosting-deploy@v0
@@ -35,18 +42,18 @@ jobs:
                   FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
             - name: Comment on PR
-              uses: actions/github-script@v6
+              uses: actions/github-script@v7
               env:
                   MERGE_COMMIT_MESSAGE: '${{ github.event.head_commit.message }}'
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                    const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
-                    if(prNumber) {
-                        github.rest.issues.createComment({
-                            body: '🚀 Successfully deployed to [https://movie-recommendation-dev.shashanks.ga](https://movie-recommendation-dev.shashanks.ga).',
-                            issue_number: prNumber,
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                        });
-                    }
+                      const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
+                      if(prNumber) {
+                          github.rest.issues.createComment({
+                              body: '🚀 Successfully deployed to [https://movie-recommendation-77e17.web.app](https://movie-recommendation-77e17.web.app).',
+                              issue_number: prNumber,
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                          });
+                      }
