@@ -1,7 +1,8 @@
 import { createApp } from 'vue';
 import App from '@/App.vue';
 import router from '@/router';
-import vSelect from '../node_modules/vue-select/src/index';
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
 
 const app = createApp(App).use(router);
 
