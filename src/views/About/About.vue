@@ -21,8 +21,7 @@
             >.
             <br />
             To learn more about me, visit here:
-            <a href="https://whoami.shashanks.ga">https://whoami.shashanks.ga</a
-            >.
+            <a href="https://techieshank.com">https://techieshank.com</a>.
         </div>
     </div>
 </template>

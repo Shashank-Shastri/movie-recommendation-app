@@ -41,12 +41,12 @@ jobs:
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
-                    const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
-                    if(prNumber) {
-                        github.rest.issues.createComment({
-                            body: '🚀 Successfully deployed to [https://movie-recommendation.shashanks.ga](https://movie-recommendation.shashanks.ga).',
-                            issue_number: prNumber,
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                        });
-                    }
+                      const [_, prNumber] = process.env.MERGE_COMMIT_MESSAGE.match(/#([\d]+)/) || [];
+                      if(prNumber) {
+                          github.rest.issues.createComment({
+                              body: '🚀 Successfully deployed to [https://movie-recommendation.techieshank.com](https://movie-recommendation.techieshank.com).',
+                              issue_number: prNumber,
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                          });
+                      }
