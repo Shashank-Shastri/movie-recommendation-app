@@ -12,17 +12,24 @@ jobs:
             - name: Checkout branch
               uses: actions/checkout@v3
 
-            - name: Retrieve npm cache (if any)
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+            - name: Retrieve yarn cache (if any)
               uses: actions/cache@v3
+              id: yarn-cache
               with:
-                  path: ~/.npm
-                  key: npm-packages
+                  path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
 
             - name: Install Dependencies
-              run: npm install
+              run: yarn install
 
             - name: Build files
-              run: npm run build
+              run: yarn build
 
             - name: Deploy to Firebase
               uses: FirebaseExtended/action-hosting-deploy@v0
