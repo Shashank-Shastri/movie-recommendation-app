@@ -10,9 +10,7 @@
                 label="l"
                 placeholder="Type a movie you like"
             >
-                <template #no-options>
-                    type to search IMDb movies..
-                </template>
+                <template #no-options> type to search IMDb movies.. </template>
                 <template #option="movie">
                     <movie-info
                         :image-url="movie.imageUrl"
@@ -52,8 +50,8 @@
             <span
                 v-if="
                     !loadingRecommendation &&
-                        !recommendedMovies.length &&
-                        selectedMovie
+                    !recommendedMovies.length &&
+                    selectedMovie
                 "
             >
                 We have no recommendations for this movie.
@@ -74,7 +72,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 import '../assets/v-select-theme.scss';
 
 export default {
-    name: 'Starter',
+    name: 'StarterPage',
     components: {
         Loading,
         MovieInfo,
@@ -127,7 +125,7 @@ export default {
                     { jsonpCallbackFunction: `imdb$${search}` }
                 );
                 const data = await response.json();
-                results = data.d.map(movie => ({
+                results = data.d.map((movie) => ({
                     cast: movie?.s ?? '',
                     imageUrl: movie?.i?.[0] ?? '',
                     link: `https://www.imdb.com/title/${movie.id}`,
@@ -152,13 +150,13 @@ export default {
                         `${process.env.VUE_APP_BACKEND_URL}/recommend_movies?imdb_id=${imdb_id}`
                     );
                     movies = await Promise.all(
-                        movies.map(async movie => {
+                        movies.map(async (movie) => {
                             const results = await this.searchMovies(
                                 movie.title
                             );
                             const imdbData =
                                 results.find(
-                                    imdbMovie =>
+                                    (imdbMovie) =>
                                         imdbMovie.id === movie.imdb_title_id
                                 ) || {};
                             return {
