@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Header />
+        <HeaderLinks />
         <h1 class="white-text">About</h1>
         <div class="white-text">
             This website recommends movie based on the cosine similarity of
@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import Header from '@/components/Header';
+import HeaderLinks from '@/components/HeaderLinks';
 
 export default {
     components: {
-        Header,
+        HeaderLinks,
     },
 };
 </script>

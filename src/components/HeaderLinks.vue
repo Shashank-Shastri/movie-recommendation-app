@@ -12,6 +12,6 @@
 
 <script>
 export default {
-    name: 'Header',
+    name: 'HeaderLinks',
 };
 </script>
